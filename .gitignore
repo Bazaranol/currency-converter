@@ -1,0 +1,51 @@
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+.phpunit.cache/
+###< phpunit/phpunit ###
+
+###> symfony/phpunit-bridge ###
+.phpunit
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###
+
+###> php-cs-fixer ###
+.php-cs-fixer.cache
+###< php-cs-fixer ###
+
+###> phpstan ###
+/phpstan.neon
+###< phpstan ###
+
+###> ide ###
+/.idea/
+/.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+###< ide ###
+
+###> docker ###
+docker-compose.override.yml
+###< docker ###
+
+###> coverage ###
+/coverage/
+###< coverage ###
+
+###> php-cs-fixer/shim ###
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+###< php-cs-fixer/shim ###

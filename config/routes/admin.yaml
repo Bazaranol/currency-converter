@@ -1,0 +1,4 @@
+# Routes for the admin panel (exchange rates)
+admin_exchange_rates:
+    resource: App\Controller\Admin\ExchangeRateController
+    type: attribute

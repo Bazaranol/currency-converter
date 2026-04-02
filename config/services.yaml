@@ -1,0 +1,78 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    # ── Auto-register all classes in src/ ──
+    App\:
+        resource: "../src/"
+        exclude:
+            - "../src/Entity/"
+            - "../src/DTO/"
+            - "../src/Exception/"
+            - "../src/Kernel.php"
+
+    # ═══════════════════════════════════════════
+    #  Domain Port → Infrastructure Adapter
+    # ═══════════════════════════════════════════
+
+    # Repository bindings
+    App\Domain\Repository\CurrencyRepositoryInterface:
+        class: App\Infrastructure\Persistence\Doctrine\DoctrineCurrencyRepository
+
+    App\Domain\Repository\ExchangeRateRepositoryInterface:
+        class: App\Infrastructure\Persistence\Doctrine\DoctrineExchangeRateRepository
+
+    # Service bindings
+    App\Domain\Service\ExchangeRateProviderInterface:
+        class: App\Infrastructure\ExternalApi\FreeCurrencyApiProvider
+
+    App\Service\CurrencyConverterInterface:
+        class: App\Service\CurrencyConverter
+
+    # ═══════════════════════════════════════════
+    #  Infrastructure wiring
+    # ═══════════════════════════════════════════
+
+    # Guzzle HTTP client
+    GuzzleHttp\ClientInterface:
+        class: GuzzleHttp\Client
+        arguments:
+            -   connect_timeout: 5
+                timeout: "%app.currency.api_timeout%"
+                http_errors: false
+                headers:
+                    Accept: "application/json"
+
+    # FreeCurrencyApi HTTP wrapper
+    App\Infrastructure\ExternalApi\FreeCurrencyApiClient:
+        arguments:
+            $apiKey:   "%app.currency.api_key%"
+            $baseUrl:  "%app.currency.api_base_url%"
+
+    # ═══════════════════════════════════════════
+    #  Service layer
+    # ═══════════════════════════════════════════
+
+    App\Service\CurrencyConverter:
+        arguments:
+            $cache:    "@cache.exchange_rates"
+            $cacheTtl: "%app.currency.cache_ttl%"
+
+    App\Service\ExchangeRateSyncService:
+        arguments:
+            $cache:            "@cache.exchange_rates"
+            $baseCurrencyCode: "%app.currency.base_currency%"
+
+    # ═══════════════════════════════════════════
+    #  Event listeners
+    # ═══════════════════════════════════════════
+
+    App\Infrastructure\EventListener\RatesUpdateLogger:
+        tags:
+            -   name: kernel.event_listener
+                event: App\Application\Event\RatesUpdatedEvent
+                method: onRatesUpdated
+            -   name: kernel.event_listener
+                event: App\Application\Event\RatesSyncFailedEvent
+                method: onSyncFailed

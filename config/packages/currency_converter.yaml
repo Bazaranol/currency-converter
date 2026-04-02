@@ -1,0 +1,56 @@
+# ──────────────────────────────────────────────
+#  Currency Converter Module Configuration
+# ──────────────────────────────────────────────
+#
+#  To add a new currency:
+#    1. Add an entry to app.currency.supported below
+#    2. Run: php bin/console doctrine:fixtures:load --append
+#    3. Run: php bin/console app:exchange-rates:update
+#
+#  No code changes needed — the system picks up new currencies
+#  from this config via CurrencyFixtures.
+#
+
+parameters:
+    # ── Supported currencies (ISO 4217) ──────────────────
+    #  Only currencies supported by freecurrencyapi.com (free tier).
+    #  Full list: https://freecurrencyapi.com/docs/currency-list
+    app.currency.supported:
+        - { code: "USD", name: "US Dollar",           symbol: "$" }
+        - { code: "EUR", name: "Euro",                 symbol: "€" }
+        - { code: "GBP", name: "British Pound",        symbol: "£" }
+        - { code: "JPY", name: "Japanese Yen",         symbol: "¥" }
+        - { code: "CHF", name: "Swiss Franc",          symbol: "Fr" }
+        - { code: "CAD", name: "Canadian Dollar",      symbol: "C$" }
+        - { code: "AUD", name: "Australian Dollar",    symbol: "A$" }
+        - { code: "CNY", name: "Chinese Yuan",         symbol: "¥" }
+        - { code: "INR", name: "Indian Rupee",         symbol: "₹" }
+        - { code: "PLN", name: "Polish Zloty",         symbol: "zł" }
+        - { code: "RUB", name: "Russian Ruble",        symbol: "₽" }
+        - { code: "TRY", name: "Turkish Lira",         symbol: "₺" }
+        - { code: "BRL", name: "Brazilian Real",        symbol: "R$" }
+        - { code: "SEK", name: "Swedish Krona",        symbol: "kr" }
+        - { code: "NOK", name: "Norwegian Krone",      symbol: "kr" }
+        - { code: "NZD", name: "New Zealand Dollar",   symbol: "NZ$" }
+        - { code: "MXN", name: "Mexican Peso",         symbol: "Mex$" }
+
+    # ── Base currency ────────────────────────────────────
+    #  All rates are stored as: 1 BASE = X TARGET
+    #  Cross-rate conversion uses this as the pivot.
+    app.currency.base_currency: "USD"
+
+    # ── Cache TTL (seconds) ──────────────────────────────
+    #  How long exchange rates stay in Redis.
+    #  Default: 86400 = 24 hours = matches cron sync.
+    app.currency.cache_ttl: 86400
+
+    # ── bcmath precision ─────────────────────────────────
+    #  Decimal places for all monetary arithmetic.
+    #  6 is sufficient for most currency pairs;
+    #  increase for crypto or exotic pairs if needed.
+    app.currency.bcmath_scale: 6
+
+    # ── External API settings ────────────────────────────
+    app.currency.api_key:      "%env(FREECURRENCY_API_KEY)%"
+    app.currency.api_base_url: "%env(FREECURRENCY_API_BASE_URL)%"
+    app.currency.api_timeout:  10
